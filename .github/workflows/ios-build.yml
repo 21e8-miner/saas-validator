@@ -1,4 +1,4 @@
-name: ☁️ Cloud Build iOS App
+name: ☁️ Cloud Build & Ship to App Store
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-ios:
+  build-and-ship:
     runs-on: macos-latest
     
     steps:
@@ -17,7 +17,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          cache: 'npm'
 
       - name: 📦 Install Dependencies
         run: |
@@ -26,44 +25,47 @@ jobs:
 
       - name: 🏗️ Build Web App
         run: |
-          # Create the web assets directory structure
           mkdir -p www
           cp index.html style.css script.js auth.html auth.js pricing.html pricing.js www/
           cp -r assets www/ || true
-
-      - name: 📱 Setup iOS Project
-        run: |
           npx cap add ios
           npx cap sync ios
 
-      - name: 🔧 Setup CocoaPods
-        run: |
-          gem install cocoapods
-          cd ios/App
-          pod install
+      - name: 💎 Install Fastlane
+        run: sudo gem install fastlane
 
-      - name: 🍎 Build .xcarchive
+      - name: 🍎 Sign & Deploy to App Store
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
         run: |
-          cd ios/App
-          xcodebuild archive \
-            -workspace App.xcworkspace \
-            -scheme App \
-            -destination "generic/platform=iOS" \
-            -archivePath App.xcarchive \
-            -allowProvisioningUpdates \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+          if [ -z "$APP_STORE_CONNECT_API_KEY_ID" ]; then
+            echo "⚠️ No Signing Keys found in GitHub Secrets."
+            echo "ℹ️ Skipping upload. This will be an unsiged dry-run build."
+            # Fallback to unsigned build for verification
+            cd ios/App
+            xcodebuild archive -workspace App.xcworkspace -scheme App -destination "generic/platform=iOS" -archivePath App.xcarchive CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+          else
+            echo "✅ Signing Keys found! Building and Uploading to App Store..."
+            # Create a temporary Fastfile for cloud execution
+            cd ios/App
+            cat > Fastfile <<EOF
+            default_platform(:ios)
+            platform :ios do
+              desc "Cloud Build & Upload"
+              lane :release do
+                build_app(workspace: "App.xcworkspace", scheme: "App")
+                upload_to_app_store(force: true, skip_waiting_for_build_processing: true)
+              end
+            end
+            EOF
+            fastlane ios release
+          fi
 
-      - name: 📦 Export .ipa (Unsigned)
-        run: |
-          cd ios/App
-          mkdir -p Payload
-          cp -r App.xcarchive/Products/Applications/App.app Payload/
-          zip -r App.ipa Payload
-
-      - name: 📤 Upload App Artifact
+      - name: 📤 Upload Artifact (Unsigned only)
+        if: ${{ env.APP_STORE_CONNECT_API_KEY_ID == '' }}
         uses: actions/upload-artifact@v3
         with:
-          name: saas-validator-ios
-          path: ios/App/App.ipa
+          name: saas-validator-ios-unsigned
+          path: ios/App/App.xcarchive
