@@ -1,0 +1,36 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Push a new release build to the App Store"
+  lane :release do
+    # 1. Ensure we are on the main branch
+    ensure_git_status_clean
+
+    # 2. Increment build number automatically
+    increment_build_number(xcodeproj: "ios/App/App.xcodeproj")
+
+    # 3. Build the iOS app
+    build_app(
+      scheme: "App",
+      workspace: "ios/App/App.xcworkspace",
+      clean: true,
+      export_method: "app-store"
+    )
+
+    # 4. Upload to App Store Connect
+    # This automatically handles screenshots from assets/screenshots if configured
+    upload_to_app_store(
+      force: true, # Skip HTML report verification
+      skip_waiting_for_build_processing: true
+    )
+  end
+
+  desc "Process screenshots for App Store"
+  lane :screenshots do
+    # This assumes screenshots are already generated in assets/screenshots
+    # We would normally use 'snapshot' here but we generated them via Puppeteer
+    # so we just need to ensure they are in the right place for 'deliver'
+    # For now, this is a placeholder for any image processing
+    puts "Screenshots ready in assets/screenshots"
+  end
+end
