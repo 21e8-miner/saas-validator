@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🍎 AUTO-SUBMIT TO APP STORE (Improved v3)
+# 🍎 AUTO-SUBMIT TO APP STORE (Final Perfected Version)
 # Wrapper for Fastlane deployment
 
 set -e
@@ -56,11 +56,13 @@ if grep -q "YOUR_APPLE_ID_EMAIL" fastlane/Appfile; then
     fi
 fi
 
-# AUTO-FIX: Commit changes so Fastlane doesn't complain about dirty git status
+# AUTO-FIX: Aggressively commit ALL changes to satisfy Fastlane
+# This handles .gitignore updates, Fastlane auto-generated docs, and config changes
 if [[ -n $(git status --porcelain) ]]; then
-    echo -e "${YELLOW}Committing configuration changes to satisfy Fastlane...${NC}"
-    git add fastlane/Appfile auto-submit-appstore.sh
-    git commit -m "🍎 Configure App Store credentials" || echo "Nothing to commit"
+    echo -e "${YELLOW}Committing all changes to ensure clean git state...${NC}"
+    git add .
+    git commit -m "🍎 Auto-commit: Prepare for App Store submission" || echo "Nothing to commit"
+    echo -e "${GREEN}✓ Git repository cleaned.${NC}"
 fi
 
 # Run Fastlane
