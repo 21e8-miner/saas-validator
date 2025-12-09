@@ -1,5 +1,5 @@
 app_identifier("com.saasvalidator.app") # The bundle identifier of your app
-apple_id("YOUR_APPLE_ID_EMAIL") # Your Apple email address
+apple_id("noisefloor99@yahoo.com") # Your Apple email address
 
 itc_team_id("YOUR_ITC_TEAM_ID") # App Store Connect Team ID
 team_id("YOUR_TEAM_ID") # Developer Portal Team ID
