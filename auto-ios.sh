@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# 📱 AUTO-IOS SCRIPT - SaaS Validator
-# This script automates iOS app creation as much as possible
+# 📱 AUTO-IOS SCRIPT (Cloud-Aware)
+# This script automates iOS app creation, falling back to Cloud Build if Xcode is missing
 
 set -e
 
@@ -15,98 +15,78 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-print_status() {
-    echo -e "${BLUE}==>${NC} $1"
-}
+# 1. CHECK XCODE STATUS
+print_status() { echo -e "${BLUE}==>${NC} $1"; }
+print_status "Checking build environment..."
 
-print_success() {
-    echo -e "${GREEN}✓${NC} $1"
-}
+# Check active developer directory
+current_path=$(xcode-select -p)
 
-print_warning() {
-    echo -e "${YELLOW}⚠${NC} $1"
-}
-
-print_error() {
-    echo -e "${RED}✗${NC} $1"
-}
-
-# Check requirements
-print_status "Checking requirements..."
-
-# Check macOS
-if [[ "$OSTYPE" != "darwin"* ]]; then
-    print_error "This script requires macOS to build iOS apps"
-    exit 1
+# DETECT MISSING XCODE
+if [[ "$current_path" == *"/Library/Developer/CommandLineTools"* ]]; then
+    echo -e "${YELLOW}⚠ Full Xcode not found (using Command Line Tools)${NC}"
+    echo ""
+    echo "Local build is impossible without the 12GB Xcode app."
+    echo "But don't worry! I have prepared a CLOUD BUILD pipeline for you."
+    echo ""
+    echo "Instead of building here, we will push code to GitHub,"
+    echo "and GitHub's servers will build the iOS app for us."
+    echo ""
+    
+    read -p "🚀 Push to GitHub to start Cloud Build? (y/n) " -n 1 -r
+    echo ""
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo "Pushing to GitHub..."
+        git add .
+        git commit -m "☁️ Trigger Cloud Build" 2>/dev/null || true
+        
+        # Check if remote exists
+        if git remote get-url origin > /dev/null 2>&1; then
+            git push
+            echo ""
+            echo -e "${GREEN}✓ Code pushed! Cloud build starting...${NC}"
+            echo "Visit your GitHub repository 'Actions' tab to download your App."
+        else
+            echo -e "${RED}Error: No GitHub remote found.${NC}"
+            echo "Run this to link your repo:"
+            echo "  git remote add origin https://github.com/YOUR_USERNAME/saas-validator.git"
+            echo "  git push -u origin main"
+        fi
+    fi
+    exit 0
 fi
-print_success "Running on macOS"
 
-# Check Xcode
+# ... Original verify logic for users WHO HAVE Xcode ...
 if ! command -v xcodebuild &> /dev/null; then
-    print_warning "Xcode not found. Please install from App Store"
-    echo "  Download: https://apps.apple.com/app/xcode/id497799835"
-    exit 1
-fi
-print_success "Xcode installed"
-
-# Check if we're in the right directory
-if [ ! -f "package.json" ]; then
-    print_error "Must run from saas-validator directory"
+    echo "Xcode not found."
     exit 1
 fi
 
-# 1. Install Capacitor dependencies
 print_status "Installing Capacitor..."
-npm install @capacitor/core@latest @capacitor/cli@latest @capacitor/ios@latest --save
+npm install >/dev/null 2>&1
+npm install @capacitor/core @capacitor/cli @capacitor/ios --save >/dev/null 2>&1
 
-print_success "Capacitor installed"
-
-# 2. Initialize Capacitor (if not already done)
+print_status "Initializing iOS project..."
+# Initialize if needed
 if [ ! -f "capacitor.config.json" ]; then
-    print_status "Initializing Capacitor..."
-    npx cap init "SaaS Validator" "com.saasvalidator.app" --web-dir .
-else
-    print_success "Capacitor already initialized"
+    npx cap init "SaaS Validator" "com.saasvalidator.app" --web-dir www
 fi
 
-# 3. Add iOS platform
-print_status "Adding iOS platform..."
+# Build www folder
+print_status "Building web assets..."
+rm -rf www
+mkdir -p www
+cp index.html style.css script.js auth.html auth.js pricing.html pricing.js www/
+cp -r assets www/ 2>/dev/null || true
+
+# Add/Sync iOS
+print_status "Syncing to iOS..."
 if [ ! -d "ios" ]; then
     npx cap add ios
-    print_success "iOS platform added"
-else
-    print_success "iOS platform already exists"
 fi
-
-# 4. Sync web assets to iOS
-print_status "Syncing web assets to iOS..."
 npx cap sync ios
-print_success "Assets synced"
 
-# 5. Copy app icon if it exists
-if [ -f "assets/icons/app-icon-1024.png" ]; then
-    print_status "App icon found, manual installation required in Xcode"
-    print_warning "Copy assets/icons/app-icon-1024.png to Xcode Assets folder"
-fi
-
-# 6. Open Xcode
-print_status "Opening project in Xcode..."
+echo ""
+echo -e "${GREEN}✓ iOS Project Ready (Local)${NC}"
+echo "Opening Xcode..."
 npx cap open ios
-
-echo ""
-print_success "🎉 iOS PROJECT READY!"
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo ""
-echo "Next steps in Xcode:"
-echo ""
-echo "  1. Select your Team (Apple Developer account)"
-echo "  2. Set Bundle Identifier: com.saasvalidator.app"
-echo "  3. Add app icons to Assets.xcassets"
-echo "  4. Build → Archive"
-echo "  5. Distribute to App Store"
-echo ""
-echo "See APP_STORE_GUIDE.md for detailed instructions"
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo ""
