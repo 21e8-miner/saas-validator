@@ -1,24 +1,9 @@
 {
     "appId": "com.saasvalidator.app",
     "appName": "SaaS Validator",
-    "webDir": ".",
+    "webDir": "www",
     "bundledWebRuntime": false,
-    "backgroundColor": "#0a0b0f",
     "ios": {
-        "contentInset": "always",
-        "backgroundColor": "#0a0b0f",
-        "scheme": "SaaS Validator",
-        "preferredContentMode": "mobile"
-    },
-    "android": {
-        "backgroundColor": "#0a0b0f",
-        "allowMixedContent": true
-    },
-    "plugins": {
-        "SplashScreen": {
-            "launchShowDuration": 2000,
-            "backgroundColor": "#0a0b0f",
-            "showSpinner": false
-        }
+        "contentInset": "always"
     }
 }

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - SaaS Validator</title>
+    <meta name="description"
+        content="Simple, transparent pricing for SaaS validation tools. Start free, upgrade anytime.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+
+<body>
+    <div class="animated-bg">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="40" height="40" rx="8" fill="url(#logo-gradient)" />
+                        <path d="M12 20L18 26L28 14" stroke="white" stroke-width="3" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <defs>
+                            <linearGradient id="logo-gradient" x1="0" y1="0" x2="40" y2="40">
+                                <stop stop-color="#667eea" />
+                                <stop offset="1" stop-color="#764ba2" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span class="logo-text">SaaS Validator</span>
+                </div>
+                <nav class="nav">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <button class="btn-primary" onclick="window.location.href='auth.html'">Sign In</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="pricing-hero">
+        <div class="container">
+            <div class="pricing-header">
+                <h1 class="hero-title">
+                    Simple, <span class="gradient-text">Transparent</span> Pricing
+                </h1>
+                <p class="hero-description">
+                    Start free, upgrade when you're ready. No hidden fees, cancel anytime.
+                </p>
+                <div class="billing-toggle">
+                    <span class="toggle-label">Monthly</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="billing-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label">Annual <span class="save-badge">Save 20%</span></span>
+                </div>
+            </div>
+
+            <div class="pricing-grid">
+                <!-- Free Plan -->
+                <div class="pricing-card">
+                    <div class="plan-header">
+                        <h3>Free</h3>
+                        <div class="price">
+                            <span class="price-amount">$0</span>
+                            <span class="price-period">/month</span>
+                        </div>
+                        <p class="plan-description">Perfect for trying out the platform</p>
+                    </div>
+                    <ul class="features-list">
+                        <li>✓ 3 validations per month</li>
+                        <li>✓ Basic market analysis</li>
+                        <li>✓ Revenue projections</li>
+                        <li>✓ Competition insights</li>
+                        <li>✗ Detailed competitor analysis</li>
+                        <li>✗ CAC calculator</li>
+                        <li>✗ Priority support</li>
+                    </ul>
+                    <button class="btn-secondary" onclick="window.location.href='auth.html'">
+                        Get Started
+                    </button>
+                </div>
+
+                <!-- Pro Plan (Most Popular) -->
+                <div class="pricing-card featured">
+                    <div class="popular-badge">Most Popular</div>
+                    <div class="plan-header">
+                        <h3>Pro</h3>
+                        <div class="price">
+                            <span class="price-amount monthly-price">$29</span>
+                            <span class="price-amount annual-price hidden">$23</span>
+                            <span class="price-period">/month</span>
+                        </div>
+                        <p class="plan-description">For serious founders building SaaS</p>
+                    </div>
+                    <ul class="features-list">
+                        <li>✓ Unlimited validations</li>
+                        <li>✓ Advanced market analysis</li>
+                        <li>✓ 5-year revenue projections</li>
+                        <li>✓ Detailed competitor analysis</li>
+                        <li>✓ CAC & LTV calculator</li>
+                        <li>✓ Go-to-market playbook</li>
+                        <li>✓ Priority email support</li>
+                        <li>✓ Export reports (PDF)</li>
+                    </ul>
+                    <button class="btn-submit" data-plan="pro">
+                        Upgrade to Pro
+                    </button>
+                </div>
+
+                <!-- Team Plan -->
+                <div class="pricing-card">
+                    <div class="plan-header">
+                        <h3>Team</h3>
+                        <div class="price">
+                            <span class="price-amount monthly-price">$99</span>
+                            <span class="price-amount annual-price hidden">$79</span>
+                            <span class="price-period">/month</span>
+                        </div>
+                        <p class="plan-description">For teams and agencies</p>
+                    </div>
+                    <ul class="features-list">
+                        <li>✓ Everything in Pro</li>
+                        <li>✓ Up to 10 team members</li>
+                        <li>✓ Shared workspace</li>
+                        <li>✓ Collaboration tools</li>
+                        <li>✓ Custom branding</li>
+                        <li>✓ API access</li>
+                        <li>✓ Dedicated account manager</li>
+                        <li>✓ Phone & chat support</li>
+                    </ul>
+                    <button class="btn-secondary" data-plan="team">
+                        Start Team Trial
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3>Can I change plans anytime?</h3>
+                    <p>Yes! Upgrade, downgrade, or cancel anytime. Changes take effect immediately.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>What payment methods do you accept?</h3>
+                    <p>We accept all major credit cards, debit cards, and PayPal via Stripe.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Do you offer refunds?</h3>
+                    <p>Yes! We offer a 30-day money-back guarantee if you're not satisfied.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Is there a free trial for Pro?</h3>
+                    <p>Your Free plan serves as a trial. Upgrade anytime to unlock Pro features.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>What happens when I hit my validation limit?</h3>
+                    <p>On the Free plan, you'll need to upgrade or wait until next month. Pro has no limits.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Can I get a custom enterprise plan?</h3>
+                    <p>Absolutely! Contact us for white-label solutions and custom pricing.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-card">
+                <h2>Ready to validate your next billion-dollar idea?</h2>
+                <p>Join 1,247+ founders who've validated their SaaS ideas with us.</p>
+                <button class="btn-upgrade" onclick="window.location.href='auth.html'">
+                    Get Started Free
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2024 SaaS Validator. Built with AI-powered insights.</p>
+                <div class="footer-links">
+                    <a href="#privacy">Privacy</a>
+                    <a href="#terms">Terms</a>
+                    <a href="#contact">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="pricing.js"></script>
+</body>
+
+</html>
