@@ -1,0 +1,69 @@
+name: ☁️ Cloud Build iOS App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v3
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: |
+          npm ci
+          npm install @capacitor/core @capacitor/cli @capacitor/ios
+
+      - name: 🏗️ Build Web App
+        run: |
+          # Create the web assets directory structure
+          mkdir -p www
+          cp index.html style.css script.js auth.html auth.js pricing.html pricing.js www/
+          cp -r assets www/ || true
+
+      - name: 📱 Setup iOS Project
+        run: |
+          npx cap add ios
+          npx cap sync ios
+
+      - name: 🔧 Setup CocoaPods
+        run: |
+          gem install cocoapods
+          cd ios/App
+          pod install
+
+      - name: 🍎 Build .xcarchive
+        run: |
+          cd ios/App
+          xcodebuild archive \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -destination "generic/platform=iOS" \
+            -archivePath App.xcarchive \
+            -allowProvisioningUpdates \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: 📦 Export .ipa (Unsigned)
+        run: |
+          cd ios/App
+          mkdir -p Payload
+          cp -r App.xcarchive/Products/Applications/App.app Payload/
+          zip -r App.ipa Payload
+
+      - name: 📤 Upload App Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: saas-validator-ios
+          path: ios/App/App.ipa
