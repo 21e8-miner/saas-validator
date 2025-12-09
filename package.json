@@ -1,0 +1,26 @@
+{
+  "name": "saas-validator",
+  "version": "1.0.0",
+  "description": "Validate Your Billion-Dollar SaaS Idea in 60 Seconds",
+  "main": "index.html",
+  "scripts": {
+    "dev": "open index.html",
+    "init": "npm install @capacitor/core @capacitor/cli @capacitor/ios",
+    "cap:init": "npx cap init 'SaaS Validator' 'com.saasvalidator.app'",
+    "cap:add:ios": "npx cap add ios",
+    "cap:sync": "npx cap sync",
+    "cap:open:ios": "npx cap open ios",
+    "build:ios": "npm run cap:sync && npm run cap:open:ios"
+  },
+  "keywords": ["saas", "validation", "startup", "entrepreneur"],
+  "author": "SaaS Validator Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@capacitor/cli": "^5.0.0"
+  },
+  "dependencies": {
+    "@capacitor/core": "^5.0.0",
+    "@capacitor/ios": "^5.0.0",
+    "@capacitor/android": "^5.0.0"
+  }
+}
