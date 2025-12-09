@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaaS Validator - Validate Your Billion Dollar Idea</title>
+    <meta name="description" content="AI-powered SaaS idea validation and profit calculator. Get instant market analysis, revenue projections, and competitive insights.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="40" height="40" rx="8" fill="url(#logo-gradient)"/>
+                        <path d="M12 20L18 26L28 14" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs>
+                            <linearGradient id="logo-gradient" x1="0" y1="0" x2="40" y2="40">
+                                <stop stop-color="#667eea"/>
+                                <stop offset="1" stop-color="#764ba2"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span class="logo-text">SaaS Validator</span>
+                </div>
+                <nav class="nav">
+                    <button class="btn-secondary" id="pricing-btn">Pricing</button>
+                    <button class="btn-primary" id="upgrade-btn">✨ Upgrade Pro</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="badge">
+                    <span class="badge-icon">🚀</span>
+                    <span>Powered by Advanced AI Analysis</span>
+                </div>
+                <h1 class="hero-title">
+                    Validate Your SaaS Idea in
+                    <span class="gradient-text">60 Seconds</span>
+                </h1>
+                <p class="hero-description">
+                    Get instant market validation, revenue projections, and competitive analysis. 
+                    Know if your idea is worth building before you write a single line of code.
+                </p>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-value">1,247</div>
+                        <div class="stat-label">Ideas Validated</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">$2.4M</div>
+                        <div class="stat-label">Avg. Revenue Projected</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">87%</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Validator Form -->
+    <section class="validator-section">
+        <div class="container">
+            <div class="validator-card">
+                <form id="validator-form" class="validator-form">
+                    <div class="form-header">
+                        <h2>Tell Us About Your Idea</h2>
+                        <p>Answer a few questions and get comprehensive insights</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label for="idea-name">What's your SaaS idea called?</label>
+                            <input 
+                                type="text" 
+                                id="idea-name" 
+                                name="idea-name" 
+                                placeholder="e.g., AI-Powered Email Assistant"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="idea-description">Describe your idea in one sentence</label>
+                            <textarea 
+                                id="idea-description" 
+                                name="idea-description" 
+                                rows="3"
+                                placeholder="e.g., An AI tool that helps busy professionals write, organize, and automate their email workflows"
+                                required
+                            ></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="target-market">Target Market</label>
+                            <select id="target-market" name="target-market" required>
+                                <option value="">Select market...</option>
+                                <option value="b2b-smb">B2B - Small Business</option>
+                                <option value="b2b-enterprise">B2B - Enterprise</option>
+                                <option value="b2c">B2C - Consumers</option>
+                                <option value="b2b2c">B2B2C - Platform</option>
+                                <option value="developers">Developers/Technical</option>
+                                <option value="marketers">Marketing Professionals</option>
+                                <option value="designers">Designers/Creatives</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pricing-model">Pricing Model</label>
+                            <select id="pricing-model" name="pricing-model" required>
+                                <option value="">Select model...</option>
+                                <option value="freemium">Freemium</option>
+                                <option value="subscription">Subscription Only</option>
+                                <option value="usage-based">Usage-based</option>
+                                <option value="one-time">One-time Payment</option>
+                                <option value="tiered">Tiered Pricing</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="monthly-price">Expected Monthly Price ($)</label>
+                            <input 
+                                type="number" 
+                                id="monthly-price" 
+                                name="monthly-price" 
+                                placeholder="49"
+                                min="0"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dev-time">Development Time (months)</label>
+                            <input 
+                                type="number" 
+                                id="dev-time" 
+                                name="dev-time" 
+                                placeholder="3"
+                                min="1"
+                                max="24"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="competitors">Known Competitors (optional)</label>
+                            <input 
+                                type="text" 
+                                id="competitors" 
+                                name="competitors" 
+                                placeholder="e.g., Superhuman, Front, HEY"
+                            >
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="validate-btn">
+                        <span class="btn-text">Validate My Idea</span>
+                        <span class="btn-icon">→</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section (Hidden by default) -->
+    <section class="results-section hidden" id="results-section">
+        <div class="container">
+            <div class="results-header">
+                <h2>Your Validation Report</h2>
+                <div class="overall-score">
+                    <div class="score-circle" id="overall-score-circle">
+                        <svg class="score-ring" width="120" height="120">
+                            <circle class="score-ring-bg" cx="60" cy="60" r="52" />
+                            <circle class="score-ring-progress" cx="60" cy="60" r="52" id="score-progress" />
+                        </svg>
+                        <div class="score-content">
+                            <div class="score-number" id="overall-score">0</div>
+                            <div class="score-label">Score</div>
+                        </div>
+                    </div>
+                    <div class="score-verdict">
+                        <h3 id="verdict-title">Analyzing...</h3>
+                        <p id="verdict-description">Please wait...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon">💰</div>
+                    <div class="metric-label">Projected Monthly Revenue (Yr 1)</div>
+                    <div class="metric-value" id="revenue-projection">$0</div>
+                    <div class="metric-change positive">
+                        <span>↗</span> Based on market analysis
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon">📈</div>
+                    <div class="metric-label">Market Opportunity</div>
+                    <div class="metric-value" id="market-size">$0B</div>
+                    <div class="metric-change" id="market-trend">
+                        <span>→</span> Stable market
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon">🎯</div>
+                    <div class="metric-label">Competition Level</div>
+                    <div class="metric-value" id="competition-level">Low</div>
+                    <div class="metric-change" id="competition-detail">
+                        <span>✓</span> Good opportunity
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon">⚡</div>
+                    <div class="metric-label">Time to Market</div>
+                    <div class="metric-value" id="time-to-market">0 months</div>
+                    <div class="metric-change" id="speed-verdict">
+                        <span>→</span> Average speed
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Analysis -->
+            <div class="analysis-grid">
+                <div class="analysis-card">
+                    <div class="analysis-header">
+                        <h3>Revenue Projections</h3>
+                        <span class="pro-badge">PRO</span>
+                    </div>
+                    <div class="chart-container" id="revenue-chart">
+                        <canvas id="revenue-canvas"></canvas>
+                    </div>
+                    <div class="projection-details" id="projection-details">
+                        <!-- Will be populated by JS -->
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <div class="analysis-header">
+                        <h3>Key Strengths</h3>
+                    </div>
+                    <ul class="insights-list" id="strengths-list">
+                        <!-- Will be populated by JS -->
+                    </ul>
+                </div>
+
+                <div class="analysis-card">
+                    <div class="analysis-header">
+                        <h3>Potential Challenges</h3>
+                    </div>
+                    <ul class="insights-list warning" id="challenges-list">
+                        <!-- Will be populated by JS -->
+                    </ul>
+                </div>
+
+                <div class="analysis-card">
+                    <div class="analysis-header">
+                        <h3>Recommendations</h3>
+                    </div>
+                    <ul class="insights-list success" id="recommendations-list">
+                        <!-- Will be populated by JS -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="cta-card">
+                <div class="cta-content">
+                    <h3>Want the Full Report?</h3>
+                    <p>Upgrade to Pro for detailed competitor analysis, customer acquisition strategies, and a complete go-to-market playbook.</p>
+                    <div class="cta-features">
+                        <div class="cta-feature">✓ Detailed competitive analysis</div>
+                        <div class="cta-feature">✓ Customer acquisition blueprint</div>
+                        <div class="cta-feature">✓ Pricing optimization</div>
+                        <div class="cta-feature">✓ 5-year financial model</div>
+                    </div>
+                </div>
+                <button class="btn-upgrade">
+                    Upgrade to Pro - $29/month
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2024 SaaS Validator. Built with AI-powered insights.</p>
+                <div class="footer-links">
+                    <a href="#privacy">Privacy</a>
+                    <a href="#terms">Terms</a>
+                    <a href="#contact">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
