@@ -1,3 +1,39 @@
+// Performance utilities
+const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+};
+
+// DOM cache for better performance
+const DOM = {};
+const cacheDOM = () => {
+    DOM.form = document.getElementById('validator-form');
+    DOM.resultsSection = document.getElementById('results-section');
+    DOM.overallScore = document.getElementById('overall-score');
+    DOM.scoreProgress = document.getElementById('score-progress');
+    DOM.verdictTitle = document.getElementById('verdict-title');
+    DOM.verdictDesc = document.getElementById('verdict-description');
+    DOM.revenueProjection = document.getElementById('revenue-projection');
+    DOM.marketSize = document.getElementById('market-size');
+    DOM.marketTrend = document.getElementById('market-trend');
+    DOM.competitionLevel = document.getElementById('competition-level');
+    DOM.competitionDetail = document.getElementById('competition-detail');
+    DOM.timeToMarket = document.getElementById('time-to-market');
+    DOM.speedVerdict = document.getElementById('speed-verdict');
+    DOM.projectionDetails = document.getElementById('projection-details');
+    DOM.strengthsList = document.getElementById('strengths-list');
+    DOM.challengesList = document.getElementById('challenges-list');
+    DOM.recommendationsList = document.getElementById('recommendations-list');
+    DOM.revenueCanvas = document.getElementById('revenue-canvas');
+};
+
 // Market data and intelligence engine
 const marketData = {
     'b2b-smb': { size: 125, growth: 1.15, competition: 0.7, avgCAC: 450 },
@@ -18,10 +54,13 @@ const pricingMultipliers = {
     'tiered': { conversion: 0.14, churn: 0.05 }
 };
 
+// Initialize DOM cache when page loads
+document.addEventListener('DOMContentLoaded', cacheDOM);
+
 // Form submission handler
 document.getElementById('validator-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const formData = {
         name: document.getElementById('idea-name').value,
         description: document.getElementById('idea-description').value,
@@ -31,14 +70,14 @@ document.getElementById('validator-form').addEventListener('submit', async (e) =
         devTime: parseInt(document.getElementById('dev-time').value),
         competitors: document.getElementById('competitors').value
     };
-    
+
     // Scroll to results
-    document.getElementById('results-section').classList.remove('hidden');
-    document.getElementById('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    
+    DOM.resultsSection.classList.remove('hidden');
+    DOM.resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
     // Simulate analysis delay
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
     // Calculate and display results
     calculateValidation(formData);
 });
@@ -84,30 +123,35 @@ function calculateValidation(data) {
 }
 
 function updateOverallScore(score) {
-    const scoreElement = document.getElementById('overall-score');
-    const progressCircle = document.getElementById('score-progress');
-    const verdictTitle = document.getElementById('verdict-title');
-    const verdictDesc = document.getElementById('verdict-description');
-    
-    // Animate score
+    // Animate score using requestAnimationFrame for better performance
     let currentScore = 0;
-    const increment = score / 50;
-    const scoreInterval = setInterval(() => {
-        currentScore += increment;
-        if (currentScore >= score) {
-            currentScore = score;
-            clearInterval(scoreInterval);
+    const duration = 1500; // 1.5 seconds
+    const startTime = performance.now();
+
+    const animateScore = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Easing function for smooth animation
+        const easeOutQuad = progress * (2 - progress);
+        currentScore = score * easeOutQuad;
+
+        DOM.overallScore.textContent = Math.round(currentScore);
+
+        if (progress < 1) {
+            requestAnimationFrame(animateScore);
         }
-        scoreElement.textContent = Math.round(currentScore);
-    }, 30);
-    
+    };
+
+    requestAnimationFrame(animateScore);
+
     // Update progress circle
     const circumference = 326.73;
     const offset = circumference - (score / 100) * circumference;
-    progressCircle.style.strokeDashoffset = offset;
-    
-    // Add gradient to SVG
-    const svg = progressCircle.closest('svg');
+    DOM.scoreProgress.style.strokeDashoffset = offset;
+
+    // Add gradient to SVG (only once)
+    const svg = DOM.scoreProgress.closest('svg');
     if (!svg.querySelector('defs')) {
         const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
         const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
@@ -116,100 +160,93 @@ function updateOverallScore(score) {
         gradient.setAttribute('y1', '0%');
         gradient.setAttribute('x2', '100%');
         gradient.setAttribute('y2', '100%');
-        
+
         const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
         stop1.setAttribute('offset', '0%');
         stop1.setAttribute('stop-color', '#667eea');
-        
+
         const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
         stop2.setAttribute('offset', '100%');
         stop2.setAttribute('stop-color', '#764ba2');
-        
+
         gradient.appendChild(stop1);
         gradient.appendChild(stop2);
         defs.appendChild(gradient);
         svg.insertBefore(defs, svg.firstChild);
     }
-    
-    // Update verdict
+
+    // Update verdict using cached DOM references
     if (score >= 80) {
-        verdictTitle.textContent = '🚀 Exceptional Opportunity!';
-        verdictDesc.textContent = 'Your idea shows strong market fit with excellent revenue potential. This is a highly viable business opportunity worth pursuing.';
+        DOM.verdictTitle.textContent = '🚀 Exceptional Opportunity!';
+        DOM.verdictDesc.textContent = 'Your idea shows strong market fit with excellent revenue potential. This is a highly viable business opportunity worth pursuing.';
     } else if (score >= 60) {
-        verdictTitle.textContent = '✅ Strong Potential';
-        verdictDesc.textContent = 'Your idea has solid fundamentals. With proper execution and market positioning, this could be a successful venture.';
+        DOM.verdictTitle.textContent = '✅ Strong Potential';
+        DOM.verdictDesc.textContent = 'Your idea has solid fundamentals. With proper execution and market positioning, this could be a successful venture.';
     } else if (score >= 40) {
-        verdictTitle.textContent = '⚠️ Needs Refinement';
-        verdictDesc.textContent = 'Your idea has potential but requires significant refinement. Consider pivoting your approach or target market.';
+        DOM.verdictTitle.textContent = '⚠️ Needs Refinement';
+        DOM.verdictDesc.textContent = 'Your idea has potential but requires significant refinement. Consider pivoting your approach or target market.';
     } else {
-        verdictTitle.textContent = '❌ High Risk';
-        verdictDesc.textContent = 'This idea faces significant challenges. We recommend reconsidering your approach or exploring alternative opportunities.';
+        DOM.verdictTitle.textContent = '❌ High Risk';
+        DOM.verdictDesc.textContent = 'This idea faces significant challenges. We recommend reconsidering your approach or exploring alternative opportunities.';
     }
 }
 
 function updateMetrics(market, data, monthlyRevenue, customers) {
     // Revenue projection
-    document.getElementById('revenue-projection').textContent = 
-        `$${(monthlyRevenue / 1000).toFixed(1)}K`;
-    
+    DOM.revenueProjection.textContent = `$${(monthlyRevenue / 1000).toFixed(1)}K`;
+
     // Market size
-    document.getElementById('market-size').textContent = 
-        `$${market.size}B`;
-    
-    const marketTrend = document.getElementById('market-trend');
+    DOM.marketSize.textContent = `$${market.size}B`;
+
+    // Market trend
     if (market.growth > 1.2) {
-        marketTrend.innerHTML = '<span>↗</span> High growth market';
-        marketTrend.classList.add('positive');
+        DOM.marketTrend.innerHTML = '<span>↗</span> High growth market';
+        DOM.marketTrend.classList.add('positive');
     } else if (market.growth > 1.1) {
-        marketTrend.innerHTML = '<span>→</span> Growing market';
+        DOM.marketTrend.innerHTML = '<span>→</span> Growing market';
     } else {
-        marketTrend.innerHTML = '<span>→</span> Stable market';
+        DOM.marketTrend.innerHTML = '<span>→</span> Stable market';
     }
-    
+
     // Competition level
-    const competitionLevel = document.getElementById('competition-level');
-    const competitionDetail = document.getElementById('competition-detail');
-    
     if (market.competition < 0.6) {
-        competitionLevel.textContent = 'Low';
-        competitionDetail.innerHTML = '<span>✓</span> Excellent opportunity';
-        competitionDetail.classList.add('positive');
+        DOM.competitionLevel.textContent = 'Low';
+        DOM.competitionDetail.innerHTML = '<span>✓</span> Excellent opportunity';
+        DOM.competitionDetail.classList.add('positive');
     } else if (market.competition < 0.8) {
-        competitionLevel.textContent = 'Medium';
-        competitionDetail.innerHTML = '<span>→</span> Competitive but viable';
+        DOM.competitionLevel.textContent = 'Medium';
+        DOM.competitionDetail.innerHTML = '<span>→</span> Competitive but viable';
     } else {
-        competitionLevel.textContent = 'High';
-        competitionDetail.innerHTML = '<span>!</span> Saturated market';
-        competitionDetail.classList.add('negative');
+        DOM.competitionLevel.textContent = 'High';
+        DOM.competitionDetail.innerHTML = '<span>!</span> Saturated market';
+        DOM.competitionDetail.classList.add('negative');
     }
-    
+
     // Time to market
-    document.getElementById('time-to-market').textContent = 
-        `${data.devTime} months`;
-    
-    const speedVerdict = document.getElementById('speed-verdict');
+    DOM.timeToMarket.textContent = `${data.devTime} months`;
+
     if (data.devTime <= 3) {
-        speedVerdict.innerHTML = '<span>⚡</span> Fast to market';
-        speedVerdict.classList.add('positive');
+        DOM.speedVerdict.innerHTML = '<span>⚡</span> Fast to market';
+        DOM.speedVerdict.classList.add('positive');
     } else if (data.devTime <= 6) {
-        speedVerdict.innerHTML = '<span>→</span> Average timeline';
+        DOM.speedVerdict.innerHTML = '<span>→</span> Average timeline';
     } else {
-        speedVerdict.innerHTML = '<span>!</span> Long development';
-        speedVerdict.classList.add('negative');
+        DOM.speedVerdict.innerHTML = '<span>!</span> Long development';
+        DOM.speedVerdict.classList.add('negative');
     }
 }
 
 function generateRevenueProjections(data, year1Revenue, churn, growth) {
-    const projectionDetails = document.getElementById('projection-details');
-    projectionDetails.innerHTML = '';
-    
+    // Use DocumentFragment for better performance when adding multiple elements
+    const fragment = document.createDocumentFragment();
+
     const periods = [
         { label: 'Year 1', multiplier: 1 },
         { label: 'Year 2', multiplier: growth * (1 - churn * 0.5) },
         { label: 'Year 3', multiplier: growth * growth * (1 - churn * 0.3) },
         { label: 'Year 5', multiplier: Math.pow(growth, 4) * (1 - churn * 0.1) }
     ];
-    
+
     periods.forEach(period => {
         const revenue = year1Revenue * period.multiplier;
         const item = document.createElement('div');
@@ -218,21 +255,25 @@ function generateRevenueProjections(data, year1Revenue, churn, growth) {
             <span class="projection-label">${period.label} ARR</span>
             <span class="projection-value">$${(revenue / 1000000).toFixed(2)}M</span>
         `;
-        projectionDetails.appendChild(item);
+        fragment.appendChild(item);
     });
-    
+
+    // Clear and append all at once
+    DOM.projectionDetails.innerHTML = '';
+    DOM.projectionDetails.appendChild(fragment);
+
     // Simple bar chart visualization
-    const canvas = document.getElementById('revenue-canvas');
-    if (canvas) {
-        drawRevenueChart(canvas, periods, year1Revenue);
+    if (DOM.revenueCanvas) {
+        drawRevenueChart(DOM.revenueCanvas, periods, year1Revenue);
     }
 }
 
 function drawRevenueChart(canvas, periods, baseRevenue) {
-    const ctx = canvas.getContext('2d');
-    canvas.width = canvas.offsetWidth * 2;
-    canvas.height = canvas.offsetHeight * 2;
-    ctx.scale(2, 2);
+    const ctx = canvas.getContext('2d', { alpha: false }); // Disable alpha for better performance
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = canvas.offsetWidth * dpr;
+    canvas.height = canvas.offsetHeight * dpr;
+    ctx.scale(dpr, dpr);
     
     const width = canvas.offsetWidth;
     const height = canvas.offsetHeight;
@@ -268,12 +309,13 @@ function drawRevenueChart(canvas, periods, baseRevenue) {
 }
 
 function generateInsights(score, data, market, hasCompetitors) {
+    // Use DocumentFragments for better performance
+    const strengthsFragment = document.createDocumentFragment();
+    const challengesFragment = document.createDocumentFragment();
+    const recommendationsFragment = document.createDocumentFragment();
+
     // Strengths
-    const strengthsList = document.getElementById('strengths-list');
-    strengthsList.innerHTML = '';
-    
     const strengths = [];
-    
     if (market.growth > 1.2) {
         strengths.push('High-growth market with strong tailwinds');
     }
@@ -289,19 +331,15 @@ function generateInsights(score, data, market, hasCompetitors) {
     if (!hasCompetitors) {
         strengths.push('Potential blue ocean opportunity with limited direct competition');
     }
-    
+
     strengths.forEach(strength => {
         const li = document.createElement('li');
         li.textContent = strength;
-        strengthsList.appendChild(li);
+        strengthsFragment.appendChild(li);
     });
-    
+
     // Challenges
-    const challengesList = document.getElementById('challenges-list');
-    challengesList.innerHTML = '';
-    
     const challenges = [];
-    
     if (market.competition > 0.8) {
         challenges.push('Highly competitive market requires strong differentiation');
     }
@@ -317,19 +355,15 @@ function generateInsights(score, data, market, hasCompetitors) {
     if (market.avgCAC > data.monthlyPrice * 2) {
         challenges.push('Customer acquisition costs may challenge unit economics');
     }
-    
+
     challenges.forEach(challenge => {
         const li = document.createElement('li');
         li.textContent = challenge;
-        challengesList.appendChild(li);
+        challengesFragment.appendChild(li);
     });
-    
+
     // Recommendations
-    const recommendationsList = document.getElementById('recommendations-list');
-    recommendationsList.innerHTML = '';
-    
     const recommendations = [];
-    
     if (score >= 70) {
         recommendations.push('Build an MVP and launch within 60 days to validate assumptions');
         recommendations.push('Focus on a narrow niche initially to build traction');
@@ -343,48 +377,55 @@ function generateInsights(score, data, market, hasCompetitors) {
         recommendations.push('Reconsider your core differentiator and unique value');
         recommendations.push('Build a smaller proof-of-concept before full development');
     }
-    
+
     if (data.pricingModel === 'freemium') {
         recommendations.push('Design a compelling upgrade path from free to paid tiers');
     }
-    
+
     if (market.competition > 0.75) {
         recommendations.push('Identify a specific vertical or use case where you can dominate');
     }
-    
+
     recommendations.forEach(recommendation => {
         const li = document.createElement('li');
         li.textContent = recommendation;
-        recommendationsList.appendChild(li);
+        recommendationsFragment.appendChild(li);
     });
+
+    // Batch DOM updates
+    DOM.strengthsList.innerHTML = '';
+    DOM.strengthsList.appendChild(strengthsFragment);
+    DOM.challengesList.innerHTML = '';
+    DOM.challengesList.appendChild(challengesFragment);
+    DOM.recommendationsList.innerHTML = '';
+    DOM.recommendationsList.appendChild(recommendationsFragment);
 }
 
-// Upgrade button handlers
-document.getElementById('upgrade-btn').addEventListener('click', () => {
-    alert('🚀 Upgrade to Pro for only $29/month!\n\nIncludes:\n✓ Unlimited validations\n✓ Detailed competitor analysis\n✓ Customer acquisition blueprints\n✓ 5-year financial models\n✓ Priority support\n\nComing soon!');
-});
-
-document.querySelectorAll('.btn-upgrade').forEach(btn => {
-    btn.addEventListener('click', () => {
+// Use event delegation for better performance with multiple buttons
+document.addEventListener('click', (e) => {
+    // Upgrade buttons
+    if (e.target.matches('#upgrade-btn') || e.target.matches('.btn-upgrade')) {
         alert('🚀 Upgrade to Pro for only $29/month!\n\nIncludes:\n✓ Unlimited validations\n✓ Detailed competitor analysis\n✓ Customer acquisition blueprints\n✓ 5-year financial models\n✓ Priority support\n\nComing soon!');
-    });
+    }
+
+    // Pricing button
+    if (e.target.matches('#pricing-btn')) {
+        alert('💎 Pricing Plans:\n\n🆓 Free: 3 validations/month\n💫 Pro: $29/month - Unlimited validations + advanced features\n🚀 Team: $99/month - Up to 10 users + collaboration tools\n\nSign up coming soon!');
+    }
 });
 
-document.getElementById('pricing-btn').addEventListener('click', () => {
-    alert('💎 Pricing Plans:\n\n🆓 Free: 3 validations/month\n💫 Pro: $29/month - Unlimited validations + advanced features\n🚀 Team: $99/month - Up to 10 users + collaboration tools\n\nSign up coming soon!');
-});
-
-// Add some interactivity to form inputs
-const inputs = document.querySelectorAll('input, textarea, select');
-inputs.forEach(input => {
-    input.addEventListener('focus', (e) => {
+// Use event delegation with debouncing for form input interactivity
+document.addEventListener('focus', (e) => {
+    if (e.target.matches('input, textarea, select')) {
         e.target.parentElement.style.transform = 'translateY(-2px)';
-    });
-    
-    input.addEventListener('blur', (e) => {
+    }
+}, true);
+
+document.addEventListener('blur', (e) => {
+    if (e.target.matches('input, textarea, select')) {
         e.target.parentElement.style.transform = 'translateY(0)';
-    });
-});
+    }
+}, true);
 
 // Animate stats on page load
 window.addEventListener('load', () => {
